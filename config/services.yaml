@@ -2,6 +2,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en_US
+    Sylius\ShopApiPlugin\Request\Customer\RegisterCustomerRequest: [ app_register_customer ]
 
 services:
     # Default configuration for services in *this* file
@@ -32,4 +33,17 @@ services:
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
         resource: '../src/Controller'
-        tags: ['controller.service_arguments']
+        tags: [ 'controller.service_arguments' ]
+
+    sylius.shop_api_plugin.controller.customer.register_customer_action:
+        class: App\Controller\RegisterCustomerAction
+        autowire: false
+        public: true
+        arguments:
+            - '@fos_rest.view_handler'
+            - '@sylius_shop_api_plugin.command_bus'
+            - '@sylius.shop_api_plugin.factory.validation_error_view_factory'
+            - '@sylius.context.channel'
+            - '@sylius.shop_api_plugin.command_provider.register_customer'
+
+    App\Controller\RegisterCustomerAction: '@sylius.shop_api_plugin.controller.customer.register_customer_action'
